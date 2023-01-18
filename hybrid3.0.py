@@ -10,10 +10,6 @@ from scipy.ndimage import interpolation as inter
 
 
 # S3 BUCKET CREDS
-ACCESS_KEY = "AKIAQ34Y5OZLCCYSLY47"
-SECRET_KEY = "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"
-BUCKET_NAME ="hdfctests"
-OUTPUT_BUCKET = "hdfcoutput"
 
 # FOR LOCAL FOLDERS
 INPUT_PATH="temp_pdf"
