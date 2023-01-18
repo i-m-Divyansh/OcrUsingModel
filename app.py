@@ -70,18 +70,22 @@ def Regex_Search(bounding_boxes):
     possible_UIDs = []
     Result = ""
 
+    print(f"bb length:{len(bounding_boxes)}")
+
     for character in range(len(bounding_boxes)):
+        print(f"char:{character}")
         if len(bounding_boxes[character]) != 0:
             Result += bounding_boxes[character][0]
+            print(f"Result:{Result}")
         else:
             Result += '?'
 
-    matches = [match.span() for match in re.finditer(r'\d{12}', Result, overlapped=True)]
-
+    matches = [match.span() for match in re.finditer(r'\d{12}', Result, overlapped=False)]
+    print(f"matched:{matches}")
     for match in matches:
-
+        print(f"match:{match}")
         UID = int(Result[match[0]:match[1]])
-
+        print(f"UID:{UID}")
         if compute_checksum(UID) == 0 and UID % 10000 != 1947:
             possible_UIDs.append([UID, match[0]])
 
@@ -92,6 +96,8 @@ def Mask_UIDs(image_path, possible_UIDs, bounding_boxes, rtype, SR=False, SR_Rat
     print("Inside Mask_UIDs")
     img = cv2.imread(image_path)
 
+    print(f"bounding_boxes:{bounding_boxes}")
+
     if rtype == 2:
         img = cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
     elif rtype == 3:
@@ -101,16 +107,24 @@ def Mask_UIDs(image_path, possible_UIDs, bounding_boxes, rtype, SR=False, SR_Rat
 
     height = img.shape[0]
 
+    print(f"height:{height}")
+
     if SR == True:
         height *= SR_Ratio[1]
 
     for UID in possible_UIDs:
-
+        print(f"UID:{UID}")
         digit1 = bounding_boxes[UID[1]].split()
         digit8 = bounding_boxes[UID[1] + 7].split()
 
+        print(f"digit1:{digit1}")
+        print(f"digit8:{digit8}")
+
         h1 = min(height - int(digit1[4]), height - int(digit8[4]))
         h2 = max(height - int(digit1[2]), height - int(digit8[2]))
+
+        print(f"h1:{h1}")
+        print(f"h2:{h2}")
 
         if SR == False:
             top_left_corner = (int(digit1[1]), h1)
@@ -171,8 +185,9 @@ def Extract_and_Mask_UIDs(image_path, SR=False, sr_image_path=None, SR_Ratio=[1,
         cv2.imwrite('./temp/rotated_grayscale.png', rotation[0])
 
         bounding_boxes = pytesseract.image_to_boxes(Image.open('./temp/rotated_grayscale.png'), config=settings).split(" 0\n")
-
+        print(f"bounding_boxes:{bounding_boxes}")
         possible_UIDs = Regex_Search(bounding_boxes)
+        print(f"possible_UIDs:{possible_UIDs}")
 
         if len(possible_UIDs) == 0:
             continue
@@ -189,6 +204,6 @@ def Extract_and_Mask_UIDs(image_path, SR=False, sr_image_path=None, SR_Ratio=[1,
     return (None, None)
 
 
-masked_img,possible_UIDs = Extract_and_Mask_UIDs("./Images/17.jpeg")
+masked_img,possible_UIDs = Extract_and_Mask_UIDs("./temp_images/21.jpg")
 
 print(possible_UIDs[0][0])

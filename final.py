@@ -97,6 +97,7 @@ def Regex_Search(bounding_boxes):
 
 def Mask_UIDs(image_path, possible_UIDs, bounding_boxes, rtype, SR=False, SR_Ratio=[1, 1]):
     img = cv2.imread(image_path)
+    print(f"bounding_boxes:{bounding_boxes}")
 
     print(f"image_path: {image_path}")
     # inputPath = "./" + inputFolder + "/" + filename + ".pdf"
@@ -121,6 +122,7 @@ def Mask_UIDs(image_path, possible_UIDs, bounding_boxes, rtype, SR=False, SR_Rat
     for UID in possible_UIDs:
 
         digit1 = bounding_boxes[UID[1]].split()
+        print(f"digit1:{digit1}")
         digit8 = bounding_boxes[UID[1] + 7].split()
 
         h1 = min(height - int(digit1[4]), height - int(digit8[4]))
@@ -330,7 +332,7 @@ def main():
             maskAadhar8Digits(filename=filename+".jpg",folername="temp_images")
             # deleteFile(filepath="./temp_images/"+filename+".jpg")
 
-# main()
+main()
 
 import schedule
 # from final import main
